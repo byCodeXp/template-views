@@ -19,21 +19,41 @@ function openFile(source, file) {
     let fileContent = read(source + file);
     if (!fileContent) return;
 
+    // incldues
+
     const matches = fileContent.match(/@:[\w\/]*/gm);
-    if (!matches) return;
+    if (matches) {
+        matches.forEach(match => {
+            const fileName = `${source}${match.replace('@:', '')}.html`;
 
-    matches.forEach(match => {
-        const fileName = `${source}${match.replace('@:', '')}.html`;
+            if (!existsSync(fileName)) {
+                fileContent = fileContent.replace(match, '');
+                return;
+            }
 
-        if (!existsSync(fileName)) {
-            fileContent = fileContent.replace(match, '');
-            return;
-        }
+            const include = read(fileName);
 
-        const include = read(fileName);
+            fileContent = fileContent.replace(match, include);
+        });
+    }
 
-        fileContent = fileContent.replace(match, include);
-    });
+    // extends
+
+    const _extends = fileContent.match(/@extend:[\w\/]*/gm);
+    if (_extends) {
+        _extends.forEach(match => {
+            const fileName = `${source}${match.replace('@extend:', '')}.html`;
+
+            if (!existsSync(fileName)) {
+                fileContent = fileContent.replace(match, '');
+                return;
+            }
+
+            const extendContent = read(fileName);
+
+            fileContent = extendContent.replace('@show', fileContent.replace(match, ''));
+        });
+    }
 
     return fileContent;
 }
