@@ -19,7 +19,7 @@ function openFile(source, file) {
     let fileContent = read(source + file);
     if (!fileContent) return;
 
-    // incldues
+    // includes
 
     const matches = fileContent.match(/@:[\w\/]*/gm);
     if (matches) {
