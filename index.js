@@ -16,19 +16,19 @@ module.exports = function (source, dest) {
 }
 
 function openFile(source, file) {
-    console.log(`Source: ${source}\nFile: ${file}`);
     let fileContent = read(source + file);
     if (!fileContent) return;
 
     const matches = fileContent.match(/@:[\w\/]*/gm);
     if (matches) {
         matches.forEach(match => {
+
             const fileName = `${match.replace('@:', '')}.html`;
             if (!existsSync(`${source}${fileName}`)) {
                 fileContent = fileContent.replace(match, '');
                 return;
             }
-            // const include = read(fileName);
+
             const content = openFile(source, fileName);
             fileContent = fileContent.replace(match, content);
         });
@@ -37,65 +37,19 @@ function openFile(source, file) {
     const _extends = fileContent.match(/@extend:[\w\/]*/gm);
     if (_extends) {
         _extends.forEach(match => {
+
             const fileName = `${match.replace('@extend:', '')}.html`;
             if (!existsSync(`${source}${fileName}`)) {
                 fileContent = fileContent.replace(match, '');
                 return;
             }
-            // const extendContent = read(fileName);
+
             const extendContent = openFile(source, fileName);
             fileContent = extendContent.replace('@show', fileContent.replace(match, ''));
         });
     }
 
     return fileContent.toString();
-}
-
-// function openFile(source, file) {
-//     let fileContent = read(source + file);
-//     if (!fileContent) return;
-//
-//     // incldues
-//
-//     const matches = fileContent.match(/@:[\w\/]*/gm);
-//     if (matches) {
-//         matches.forEach(match => {
-//             const fileName = `${source}${match.replace('@:', '')}.html`;
-//
-//             if (!existsSync(fileName)) {
-//                 fileContent = fileContent.replace(match, '');
-//                 return;
-//             }
-//
-//             const include = read(fileName);
-//
-//             fileContent = fileContent.replace(match, include);
-//         });
-//     }
-//
-//     // extends
-//
-//     const _extends = fileContent.match(/@extend:[\w\/]*/gm);
-//     if (_extends) {
-//         _extends.forEach(match => {
-//             const fileName = `${source}${match.replace('@extend:', '')}.html`;
-//
-//             if (!existsSync(fileName)) {
-//                 fileContent = fileContent.replace(match, '');
-//                 return;
-//             }
-//
-//             const extendContent = read(fileName);
-//
-//             fileContent = extendContent.replace('@show', fileContent.replace(match, ''));
-//         });
-//     }
-//
-//     return fileContent;
-// }
-
-function include() {
-
 }
 
 function read(path) {
